@@ -28,7 +28,14 @@
 typedef void(^ChangeResolutionBlock)(UIButton *button);
 typedef void(^SliderTapBlock)(CGFloat value);
 
-@interface ZFPlayerControlView : UIView 
+@interface ZFPlayerControlView : UIView
 
+/** bottomView*/
+@property (nonatomic, strong) UIImageView             *bottomImageView;
+/** topView */
+@property (nonatomic, strong) UIImageView             *topImageView;
+
+/** 是否全屏播放 */
+@property (nonatomic, assign,getter=isFullScreen)BOOL fullScreen;
 
 @end

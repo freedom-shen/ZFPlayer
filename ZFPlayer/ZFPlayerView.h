@@ -26,13 +26,21 @@
 #import "ZFPlayerControlView.h"
 #import "ZFPlayerModel.h"
 #import "ZFPlayerControlViewDelegate.h"
+#import <AVFoundation/AVFoundation.h>
 
 @protocol ZFPlayerDelegate <NSObject>
+
 @optional
+
 /** 返回按钮事件 */
 - (void)zf_playerBackAction;
 /** 下载视频 */
 - (void)zf_playerDownload:(NSString *)url;
+
+/** 视频开始播放*/
+- (void)zf_playerDidStartPlayer;
+/** 视频播放结束*/
+- (void)zf_playerDidEndPlayer;
 
 @end
 
@@ -73,7 +81,12 @@ typedef NS_ENUM(NSInteger, ZFPlayerState) {
 @property (nonatomic, assign) BOOL                    stopPlayWhileCellNotVisable;
 /** 当cell播放视频由全屏变为小屏时候，是否回到中间位置(默认YES) */
 @property (nonatomic, assign) BOOL                    cellPlayerOnCenter;
-
+/** 控制view */
+@property (nonatomic, strong) UIView                 *controlView;
+/** 是否为全屏 */
+@property (nonatomic, assign) BOOL                   isFullScreen;
+/** 播放起*/
+@property (nonatomic, strong) AVPlayer               *player;
 /**
  *  单例，用于列表cell上多个视频
  *

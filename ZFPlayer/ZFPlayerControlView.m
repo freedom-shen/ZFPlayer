@@ -58,10 +58,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 @property (nonatomic, strong) UIButton                *closeBtn;
 /** 重播按钮 */
 @property (nonatomic, strong) UIButton                *repeatBtn;
-/** bottomView*/
-@property (nonatomic, strong) UIImageView             *bottomImageView;
-/** topView */
-@property (nonatomic, strong) UIImageView             *topImageView;
+
 /** 缓存按钮 */
 @property (nonatomic, strong) UIButton                *downLoadBtn;
 /** 切换分辨率按钮 */
@@ -101,8 +98,6 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 @property (nonatomic, assign, getter=isDragged) BOOL  dragged;
 /** 是否播放结束 */
 @property (nonatomic, assign, getter=isPlayEnd) BOOL  playeEnd;
-/** 是否全屏播放 */
-@property (nonatomic, assign,getter=isFullScreen)BOOL fullScreen;
 
 @end
 
@@ -146,6 +141,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         
         self.downLoadBtn.hidden     = YES;
         self.resolutionBtn.hidden   = YES;
+        self.backBtn.hidden = YES;
         // 初始化时重置controlView
         [self zf_playerResetControlView];
         // app退到后台
@@ -390,8 +386,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 - (void)lockScrrenBtnClick:(UIButton *)sender
 {
     sender.selected = !sender.selected;
-    self.showing = NO;
-    [self zf_playerShowControlView];
+ 
     if ([self.delegate respondsToSelector:@selector(zf_controlView:lockScreenAction:)]) {
         [self.delegate zf_controlView:self lockScreenAction:sender];
     }
@@ -531,6 +526,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 {
     self.shrink                 = NO;
     self.fullScreen             = YES;
+    self.backBtn.hidden         = NO;
     self.lockBtn.hidden         = !self.isFullScreen;
     self.fullScreenBtn.selected = self.isFullScreen;
     [self.backBtn setImage:ZFPlayerImage(@"ZFPlayer_back_full") forState:UIControlStateNormal];
@@ -545,6 +541,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 - (void)setOrientationPortraitConstraint
 {
     self.fullScreen             = NO;
+    self.backBtn.hidden         = YES;
     self.lockBtn.hidden         = !self.isFullScreen;
     self.fullScreenBtn.selected = self.isFullScreen;
     [self.backBtn mas_updateConstraints:^(MASConstraintMaker *make) {
@@ -564,23 +561,16 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 
 - (void)showControlView
 {
-    if (self.lockBtn.isSelected) {
-        self.topImageView.alpha    = 0;
-        self.bottomImageView.alpha = 0;
-    } else {
-        self.topImageView.alpha    = 1;
-        self.bottomImageView.alpha = 1;
-    }
-    self.backgroundColor           = RGBA(0, 0, 0, 0.3);
-    self.lockBtn.alpha             = 1;
-    self.shrink                    = NO;
-    self.bottomProgressView.alpha  = 0;
+    self.topImageView.alpha       = 1;
+    self.bottomImageView.alpha    = 1;
+    self.lockBtn.alpha            = 1;
+    self.shrink                   = NO;
+    self.bottomProgressView.alpha = 0;
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 }
 
 - (void)hideControlView
 {
-    self.backgroundColor          = RGBA(0, 0, 0, 0);
     self.topImageView.alpha       = self.playeEnd;
     self.bottomImageView.alpha    = 0;
     self.lockBtn.alpha            = 0;
@@ -1151,12 +1141,12 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 /** 播放完了 */
 - (void)zf_playerPlayEnd
 {
+    self.backgroundColor  = RGBA(0, 0, 0, .6);
     self.repeatBtn.hidden = NO;
     self.playeEnd         = YES;
     self.showing          = NO;
     // 隐藏controlView
     [self hideControlView];
-    self.backgroundColor  = RGBA(0, 0, 0, .3);
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     self.bottomProgressView.alpha = 0;
 }
