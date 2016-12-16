@@ -65,8 +65,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 @property (nonatomic, strong) UIButton                *resolutionBtn;
 /** 分辨率的View */
 @property (nonatomic, strong) UIView                  *resolutionView;
-/** 播放按钮 */
-@property (nonatomic, strong) UIButton                *playeBtn;
+
 /** 加载失败按钮 */
 @property (nonatomic, strong) UIButton                *failBtn;
 /** 快进快退View*/
@@ -998,7 +997,9 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         self.showing = YES;
         [self autoFadeOutControlView];
     }];
-
+    if (self.toolBarBlock) {
+        self.toolBarBlock(YES);
+    }
 }
 
 /**
@@ -1013,6 +1014,10 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     }completion:^(BOOL finished) {
         self.showing = NO;
     }];
+
+    if (self.toolBarBlock) {
+        self.toolBarBlock(NO);
+    }
 }
 
 /** 小屏播放 */

@@ -21,6 +21,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+// Rewirte by Freedom
+
 #import <UIKit/UIKit.h>
 #import "ZFPlayer.h"
 #import "ZFPlayerControlView.h"
@@ -36,11 +38,20 @@
 - (void)zf_playerBackAction;
 /** 下载视频 */
 - (void)zf_playerDownload:(NSString *)url;
-
 /** 视频开始播放*/
 - (void)zf_playerDidStartPlayer;
 /** 视频播放结束*/
 - (void)zf_playerDidEndPlayer;
+/** 工具栏将要显示*/
+- (void)zf_toolBarWillShow;
+/** 工具栏将要隐藏*/
+- (void)zf_toolBarWillHidden;
+/** 能否播放*/
+- (BOOL)zf_canPlay;
+/** 能否全屏*/
+- (BOOL)zf_canFullScreen;
+/** 是否全屏 */
+- (void)zf_willTransScreen:(BOOL)isFullScreen;
 
 @end
 

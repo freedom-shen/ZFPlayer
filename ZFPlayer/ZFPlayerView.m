@@ -225,6 +225,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
         self.controlView = defaultControlView;
     } else {
         self.controlView = (ZFPlayerControlView *) controlView;
+
     }
     self.playerModel = playerModel;
 }
@@ -955,6 +956,14 @@ typedef NS_ENUM(NSInteger, PanDirection){
 /** 全屏 */
 - (void)_fullScreenAction
 {
+    id <ZFPlayerDelegate> o = self.delegate;
+    if ([o respondsToSelector:@selector(zf_canFullScreen)]) {
+        BOOL canFullScreen = [o zf_canFullScreen];
+        if (!canFullScreen) {
+            return;
+        }
+    }
+
     if (ZFPlayerShared.isLockScreen) {
         [self unLockTheScreen];
         return;
@@ -1237,6 +1246,14 @@ typedef NS_ENUM(NSInteger, PanDirection){
     
 }
 
+- (void)setIsFullScreen:(BOOL)isFullScreen {
+    _isFullScreen = isFullScreen;
+    id <ZFPlayerDelegate> o = self.delegate;
+    if ([o respondsToSelector:@selector(zf_willTransScreen:)]) {
+        [o zf_willTransScreen:isFullScreen];
+    }
+}
+
 /**
  *  设置播放的状态
  *
@@ -1299,6 +1316,10 @@ typedef NS_ENUM(NSInteger, PanDirection){
     if (tableView) { [tableView addObserver:self forKeyPath:kZFPlayerViewContentOffset options:NSKeyValueObservingOptionNew context:nil]; }
 }
 
+
+//- (void)zf_playerResetControlView {
+//}
+
 /**
  *  设置playerLayer的填充模式
  *
@@ -1353,6 +1374,20 @@ typedef NS_ENUM(NSInteger, PanDirection){
     [controlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.bottom.equalTo(self);
     }];
+    __weak ZFPlayerView *weakSelf = self;
+    [(ZFPlayerControlView *)(self.controlView) setToolBarBlock:^(BOOL show) {
+        id <ZFPlayerDelegate> o = weakSelf.delegate;
+        if (show) {
+            if ([o respondsToSelector:@selector(zf_toolBarWillShow)]) {
+                [o zf_toolBarWillShow];
+            }
+        } else {
+            if ([o respondsToSelector:@selector(zf_toolBarWillHidden)]) {
+                [o zf_toolBarWillHidden];
+            }
+        }
+
+    }];
 }
 
 - (void)setPlayerModel:(ZFPlayerModel *)playerModel
@@ -1396,6 +1431,14 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
 - (void)zf_controlView:(UIView *)controlView playAction:(UIButton *)sender
 {
+    id <ZFPlayerDelegate> o = self.delegate;
+    BOOL canPlay = YES;
+    if ([o respondsToSelector:@selector(zf_canPlay)]) {
+        canPlay = [o zf_canPlay];
+    }
+    if (!canPlay) {
+        return;
+    }
     self.isPauseByUser = !self.isPauseByUser;
     if (self.isPauseByUser) {
         [self pause];
